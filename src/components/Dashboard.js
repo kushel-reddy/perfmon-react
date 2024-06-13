@@ -8,19 +8,20 @@ import moment from 'moment';
 
 const metricOptions = [
     { value: 'CPU', label: 'CPU' },
-    { value: 'system', label: 'System'},
-    { value: 'usr', label: 'Usr'},
-    { value: 'wait', label: 'Wait'},
-    { value: 'guest', label: 'Guest'}
+    { value: 'system', label: 'System' },
+    { value: 'usr', label: 'Usr' },
+    { value: 'wait', label: 'Wait' },
+    { value: 'guest', label: 'Guest' }
 ];
 
 const Dashboard = () => {
+    const currentDateString = moment().format('YYYY-MM-DD');
     const [metrics, setMetrics] = useState([]);
     const [error, setError] = useState(null);
-    const [start, setStart] = useState('');
+    const [start, setStart] = useState(currentDateString);
     const [startTime, setStartTime] = useState('00:00:00');
     const [endTime, setEndTime] = useState('23:59:59');
-    const [end, setEnd] = useState('');
+    const [end, setEnd] = useState(currentDateString);
     const [selectedMetrics, setSelectedMetrics] = useState([]);
     const [isLive, setIsLive] = useState(false);
     const [socket, setSocket] = useState(null);
@@ -104,11 +105,11 @@ const Dashboard = () => {
                 onChange={setSelectedMetrics}
             />
             <div>
-            <button disabled={isLive} onClick={handleFetchMetrics} className="fetch-button">Fetch Metrics</button>
-            <span className="arrow"> or</span>
-            <button onClick={handleLiveToggle} className={`live-button ${isLive ? 'active' : ''}`}>
-                {isLive ? 'Stop Live' : 'Go Live'}
-            </button>
+                <button disabled={isLive} onClick={handleFetchMetrics} className="fetch-button">Fetch Metrics</button>
+                <span className="arrow"> or</span>
+                <button onClick={handleLiveToggle} className={`live-button ${isLive ? 'active' : ''}`}>
+                    {isLive ? 'Stop Live' : 'Go Live'}
+                </button>
             </div>
             {error && <div className="error">{error}</div>}
             <MetricsChart data={getAggregatedData()} title="Performance Metrics" />
