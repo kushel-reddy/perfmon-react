@@ -1,0 +1,82 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+}
+
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.dashboard-title {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.date-picker-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.date-picker {
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.fetch-button {
+    padding: 10px 20px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.fetch-button:hover {
+    background-color: #0056b3;
+}
+
+.error {
+    color: red;
+    margin-bottom: 20px;
+}
+
+.dashboard-title {
+    font-family: 'Shadows Into Light', cursive;
+    font-size: 3rem; /* Adjust the size as needed */
+    color: #333; /* You can change the color as needed */
+    z-index: -1;
+}
+
+@media (max-width: 600px) {
+    .dashboard {
+        padding: 10px;
+    }
+
+    .date-picker-container {
+        flex-direction: column;
+    }
+
+    .date-picker, .fetch-button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .fetch-button {
+        margin-top: 10px;
+    }
+}
