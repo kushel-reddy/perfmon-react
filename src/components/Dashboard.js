@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Select from 'react-select';
-import { fetchMetrics, fetchMetricsWithRange } from '../api/api';
+import { fetchMetricsWithRange } from '../api/api';
 import './Dashboard.css';
 import MetricsChart from './MetricsChart';
 import { io } from 'socket.io-client';
 import moment from 'moment';
 
 const metricOptions = [
-    { value: 'CPU', label: 'CPU' },
-    { value: 'system', label: 'System' },
-    { value: 'usr', label: 'Usr' },
-    { value: 'wait', label: 'Wait' },
-    { value: 'guest', label: 'Guest' }
+    { value: 'usr', label: '%Usr' },
+    { value: 'system', label: '%System' },
+    { value: 'guest', label: '%Guest' },
+    { value: 'wait', label: '%Wait' },
+    { value: 'CPU', label: '%CPU' },
 ];
 
 const Dashboard = () => {
@@ -22,13 +22,14 @@ const Dashboard = () => {
     const [startTime, setStartTime] = useState('00:00:00');
     const [endTime, setEndTime] = useState('23:59:59');
     const [end, setEnd] = useState(currentDateString);
-    const [selectedMetrics, setSelectedMetrics] = useState([]);
+    const [selectedMetric, setSelectedMetric] = useState([]);
     const [isLive, setIsLive] = useState(false);
     const [socket, setSocket] = useState(null);
 
     const handleFetchMetrics = async () => {
         try {
-            const data = await fetchMetricsWithRange(`${start} ${startTime}`, `${end} ${endTime}`);
+            const data = await fetchMetricsWithRange(`${start} ${startTime}`, `${end} ${endTime}`, selectedMetric);
+            console.log(data);
             setMetrics(data);
             setError('');
         } catch (err) {
@@ -37,6 +38,7 @@ const Dashboard = () => {
     };
 
     const handleLiveToggle = () => {
+        setError('')
         if (!isLive) {
             const newSocket = io('http://localhost:3000');
             newSocket.on('metrics', (newMetric) => {
@@ -52,14 +54,19 @@ const Dashboard = () => {
     };
 
     const getAggregatedData = () => {
-        console.log("metrics", metrics)
-        return selectedMetrics.map(metric => ({
-            label: metric.label,
-            data: metrics.map(m => ({
-                timestamp: moment.unix(m.interval).format("YYYY-MM-DD HH:mm:ss") || m.timestamp,
-                value: m[metric.value],
-            })),
-        }));
+        console.log("metrics", selectedMetric)
+        return [{
+            label: selectedMetric.label,
+            data: metrics.map((m) => {
+                var utcTime = moment.utc(m.interval, "YYYY-MM-DD HH:mm");
+                var localTime = utcTime.local().format("YYYY-MM-DD HH:mm");
+                return {
+                    timestamp: isLive ? moment.unix(m.interval).format("YYYY-MM-DD HH:mm") : localTime,
+                    value: m[selectedMetric.value],
+                    command: m.Command
+                }
+            }),
+        }];
     };
 
     return (
@@ -97,22 +104,21 @@ const Dashboard = () => {
                 />
             </div>
             <Select
-                isMulti
                 options={metricOptions}
                 className="metric-select"
                 classNamePrefix="select"
                 placeholder="Select Metrics"
-                onChange={setSelectedMetrics}
+                onChange={setSelectedMetric}
             />
             <div>
                 <button disabled={isLive} onClick={handleFetchMetrics} className="fetch-button">Fetch Metrics</button>
-                <span className="arrow"> or</span>
+                <span className="arrow">or</span>
                 <button onClick={handleLiveToggle} className={`live-button ${isLive ? 'active' : ''}`}>
                     {isLive ? 'Stop Live' : 'Go Live'}
                 </button>
             </div>
             {error && <div className="error">{error}</div>}
-            <MetricsChart data={getAggregatedData()} title="Performance Metrics" />
+            <MetricsChart data={getAggregatedData()} />
         </div>
     );
 };

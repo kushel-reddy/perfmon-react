@@ -1,7 +1,7 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
-import './MetricsChart.css'; 
+import './MetricsChart.css';
 
 const MetricsChart = ({ data, title }) => {
   const chartData = {
@@ -15,9 +15,47 @@ const MetricsChart = ({ data, title }) => {
     })),
   };
 
+  const chartOptions = {
+    scales: {
+      y: {
+        title: {
+          display: true,
+          text: 'Usage %',
+        },
+      },
+      x: {
+        title: {
+          display: true,
+          text: 'Time',
+        },
+      },
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: title,
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            let label = context.dataset.label || '';
+            if (label) {
+              label += ': ';
+            }
+            const value = context.parsed.y.toFixed(2);
+            const index = context.dataIndex;
+            console.log("hellooo", data[0])
+            const command = data[0].data[index].command;
+            return `${label} ${value} | ${command}`;
+          }
+        }
+      },
+    },
+  };
+
   return (
     <div className="chart-container">
-      <Line datasetIdKey='id' data={chartData} />
+      <Line datasetIdKey='id' data={chartData} options={chartOptions} />
     </div>
   );
 };
