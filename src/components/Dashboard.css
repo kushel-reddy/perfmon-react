@@ -1,3 +1,4 @@
+/* Dashboard.css */
 body {
     font-family: 'Arial', sans-serif;
     background-color: #f4f4f9;
@@ -10,11 +11,12 @@ body {
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
 .dashboard-title {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     font-size: 2.5em;
     margin-bottom: 20px;
     color: #333;
@@ -29,7 +31,8 @@ body {
     margin-bottom: 20px;
 }
 
-.date-picker {
+.date-picker,
+.time-picker {
     padding: 10px;
     font-size: 1em;
     border: 1px solid #ccc;
@@ -44,6 +47,7 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-bottom: 20px;
 }
 
 .fetch-button:hover {
@@ -55,11 +59,38 @@ body {
     margin-bottom: 20px;
 }
 
-.dashboard-title {
-    font-family: 'Shadows Into Light', cursive;
-    font-size: 3rem; /* Adjust the size as needed */
-    color: #333; /* You can change the color as needed */
-    z-index: -1;
+.metric-select {
+    width: 300px;
+    margin-bottom: 20px;
+}
+
+.chart-container {
+    width: 100%;
+    max-width: 800px;
+    height: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.live-button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 10px;
+    border-radius: 5px;
+}
+
+.live-button.active {
+    background-color: darkred;
 }
 
 @media (max-width: 600px) {
@@ -71,12 +102,41 @@ body {
         flex-direction: column;
     }
 
-    .date-picker, .fetch-button {
+    .date-picker,
+    .time-picker,
+    .fetch-button {
         width: 100%;
         margin-bottom: 10px;
     }
 
     .fetch-button {
         margin-top: 10px;
+    }
+
+    .chart-container {
+        height: 300px;
+        padding: 10px;
+    }
+}
+
+/* MetricsChart.css */
+.chart-container {
+    width: 100%;
+    max-width: 800px;
+    height: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (max-width: 600px) {
+    .chart-container {
+        height: 300px;
+        padding: 10px;
     }
 }

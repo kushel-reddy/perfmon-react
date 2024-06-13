@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { fetchMetrics, fetchMetricsWithRange } from '../api/api'
+import Select from 'react-select';
+import { fetchMetrics, fetchMetricsWithRange } from '../api/api';
 import './Dashboard.css';
 import MetricsChart from './MetricsChart';
+import { io } from 'socket.io-client';
+import moment from 'moment';
 
+const metricOptions = [
+    { value: 'CPU', label: 'CPU' },
+    { value: 'system', label: 'System'},
+    { value: 'usr', label: 'Usr'},
+    { value: 'wait', label: 'Wait'},
+    { value: 'guest', label: 'Guest'}
+];
 
 const Dashboard = () => {
     const [metrics, setMetrics] = useState([]);
@@ -11,24 +21,9 @@ const Dashboard = () => {
     const [startTime, setStartTime] = useState('00:00:00');
     const [endTime, setEndTime] = useState('23:59:59');
     const [end, setEnd] = useState('');
-
-    useEffect(() => {
-        const getData = async () => {
-            try {
-                const data = await fetchMetrics();
-                console.log(data)
-                setMetrics(data);
-            } catch (error) {
-                setError('Failed to fetch data');
-            }
-        };
-        getData();
-    }, []);
-
-    const metricData = metrics.map(m => ({
-        timestamp: m.timestamp,
-        value: m.CPU,
-    }));
+    const [selectedMetrics, setSelectedMetrics] = useState([]);
+    const [isLive, setIsLive] = useState(false);
+    const [socket, setSocket] = useState(null);
 
     const handleFetchMetrics = async () => {
         try {
@@ -40,9 +35,35 @@ const Dashboard = () => {
         }
     };
 
+    const handleLiveToggle = () => {
+        if (!isLive) {
+            const newSocket = io('http://localhost:3000');
+            newSocket.on('metrics', (newMetric) => {
+                setMetrics((prevMetrics) => [...prevMetrics, ...newMetric]);
+            });
+            setSocket(newSocket);
+        } else {
+            socket.disconnect();
+            setSocket(null);
+        }
+        setMetrics([]);
+        setIsLive(!isLive);
+    };
+
+    const getAggregatedData = () => {
+        console.log("metrics", metrics)
+        return selectedMetrics.map(metric => ({
+            label: metric.label,
+            data: metrics.map(m => ({
+                timestamp: moment.unix(m.interval).format("YYYY-MM-DD HH:mm:ss") || m.timestamp,
+                value: m[metric.value],
+            })),
+        }));
+    };
+
     return (
         <div className="dashboard">
-            <h1 className="dashboard-title">Linux Performance Metrics</h1>
+            <h1 className="dashboard-title">Linux Performance Monitor</h1>
             <div className="date-picker-container">
                 <input
                     type="date"
@@ -73,11 +94,24 @@ const Dashboard = () => {
                     placeholder="End Time"
                     className="time-picker"
                 />
-                
             </div>
-            <button onClick={handleFetchMetrics} className="fetch-button">Fetch Metrics</button>
+            <Select
+                isMulti
+                options={metricOptions}
+                className="metric-select"
+                classNamePrefix="select"
+                placeholder="Select Metrics"
+                onChange={setSelectedMetrics}
+            />
+            <div>
+            <button disabled={isLive} onClick={handleFetchMetrics} className="fetch-button">Fetch Metrics</button>
+            <span className="arrow"> or</span>
+            <button onClick={handleLiveToggle} className={`live-button ${isLive ? 'active' : ''}`}>
+                {isLive ? 'Stop Live' : 'Go Live'}
+            </button>
+            </div>
             {error && <div className="error">{error}</div>}
-            <MetricsChart data={metricData} title="Performance Metrics" />
+            <MetricsChart data={getAggregatedData()} title="Performance Metrics" />
         </div>
     );
 };
