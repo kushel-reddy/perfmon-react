@@ -40,7 +40,7 @@ const Dashboard = () => {
     const handleLiveToggle = () => {
         setError('')
         if (!isLive) {
-            const newSocket = io('http://localhost:3000');
+            const newSocket = io('http://ec2-13-127-87-100.ap-south-1.compute.amazonaws.com:3000');
             newSocket.on('metrics', (newMetric) => {
                 setMetrics((prevMetrics) => [...prevMetrics, ...newMetric]);
             });
@@ -114,7 +114,7 @@ const Dashboard = () => {
                 <button disabled={isLive} onClick={handleFetchMetrics} className="fetch-button">Fetch Metrics</button>
                 <span className="arrow">or</span>
                 <button onClick={handleLiveToggle} className={`live-button ${isLive ? 'active' : ''}`}>
-                    {isLive ? 'Stop Live' : 'Go Live'}
+                    {isLive ? 'Stop Live' : 'Watch Live'}
                 </button>
             </div>
             {error && <div className="error">{error}</div>}
