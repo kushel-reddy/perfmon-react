@@ -1,12 +1,19 @@
 import axios from 'axios';
 
 const API_URL = 'http://ec2-13-127-87-100.ap-south-1.compute.amazonaws.com:3000';
+// const API_URL = 'http://localhost:3000';
+
 
 export const fetchMetricsWithRange = async (start, end, selectedMetric) => {
-  const metric = selectedMetric?.value;
+
+  const metrics = selectedMetric.map(metric => (
+    metric.value
+  ));
     try {
-      const response = await axios.get(`${API_URL}/metrics`, {
-        params: { start, end, metric}
+      const response = await axios.post(`${API_URL}/metrics`, {
+        start,
+        end,
+        metrics
       });
       return response.data;
     } catch (error) {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
 import { fetchMetricsWithRange } from '../api/api';
 import './Dashboard.css';
@@ -22,14 +22,19 @@ const Dashboard = () => {
     const [startTime, setStartTime] = useState('00:00:00');
     const [endTime, setEndTime] = useState('23:59:59');
     const [end, setEnd] = useState(currentDateString);
-    const [selectedMetric, setSelectedMetric] = useState([]);
+    const [selectedMetrics, setSelectedMetrics] = useState([]);
     const [isLive, setIsLive] = useState(false);
     const [socket, setSocket] = useState(null);
 
+    useEffect(() => {
+        if (selectedMetrics.length > 1 && metrics.length > 0) {
+            handleFetchMetrics();
+        }
+    }, [selectedMetrics])
+
     const handleFetchMetrics = async () => {
         try {
-            const data = await fetchMetricsWithRange(`${start} ${startTime}`, `${end} ${endTime}`, selectedMetric);
-            console.log(data);
+            const data = await fetchMetricsWithRange(`${start} ${startTime}`, `${end} ${endTime}`, selectedMetrics);
             setMetrics(data);
             setError('');
         } catch (err) {
@@ -54,20 +59,31 @@ const Dashboard = () => {
     };
 
     const getAggregatedData = () => {
-        console.log("metrics", selectedMetric)
-        return [{
-            label: selectedMetric.label,
-            data: metrics.map((m) => {
-                var utcTime = moment.utc(m.interval, "YYYY-MM-DD HH:mm");
-                var localTime = utcTime.local().format("YYYY-MM-DD HH:mm");
-                return {
-                    timestamp: isLive ? moment.unix(m.interval).format("YYYY-MM-DD HH:mm") : localTime,
-                    value: m[selectedMetric.value],
-                    command: m.Command
-                }
-            }),
-        }];
+        return selectedMetrics.map((metric) => {
+            return {
+                label: metric.label,
+                data: metrics.map((m) => {
+                    var utcTime = moment.utc(m.interval, "YYYY-MM-DD HH:mm");
+                    var localTime = utcTime.local().format("YYYY-MM-DD HH:mm");
+                    return {
+                        timestamp: isLive ? moment.unix(m.interval).format("YYYY-MM-DD HH:mm") : localTime,
+                        value: m[metric.value],
+                        command: m.Command
+                    }
+                }),
+            }
+        });
     };
+
+    // const getAggregatedData = () => {
+    //     return selectedMetrics.map(metric => ({
+    //         label: metric.label,
+    //         data: metrics.map(m => ({
+    //             timestamp: moment.unix(m.interval).format("YYYY-MM-DD HH:mm:ss") || m.timestamp,
+    //             value: m[metric.value],
+    //         })),
+    //     }));
+    // };
 
     return (
         <div className="dashboard">
@@ -104,11 +120,12 @@ const Dashboard = () => {
                 />
             </div>
             <Select
+                isMulti
                 options={metricOptions}
                 className="metric-select"
                 classNamePrefix="select"
                 placeholder="Select Metrics"
-                onChange={setSelectedMetric}
+                onChange={setSelectedMetrics}
             />
             <div>
                 <button disabled={isLive} onClick={handleFetchMetrics} className="fetch-button">Fetch Metrics</button>
