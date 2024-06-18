@@ -44,7 +44,6 @@ const MetricsChart = ({ data, title }) => {
             }
             const value = context.parsed.y.toFixed(2);
             const index = context.dataIndex;
-            console.log("hellooo", data[0])
             const command = data[0].data[index].command;
             return `${label} ${value} | ${command}`;
           }
