@@ -27,7 +27,7 @@ const Dashboard = () => {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        if (selectedMetrics.length > 1 && metrics.length > 0) {
+        if (selectedMetrics.length > 1 && metrics.length > 0 && !isLive) {
             handleFetchMetrics();
         }
     }, [selectedMetrics])
