@@ -1,23 +1,24 @@
 import axios from 'axios';
-const moment = require("moment")
+const moment = require('moment');
 
 const API_URL = 'http://ec2-13-127-87-100.ap-south-1.compute.amazonaws.com:3000';
 // const API_URL = 'http://localhost:3000';
 
 
-export const fetchMetricsWithRange = async (start, end, selectedMetric) => {
+export const fetchMetricsWithRange = async (startLocal, endLocal, selectedMetric) => {
 
   const metrics = selectedMetric.map(metric => (
     metric.value
   ));
 
-  const startUTC = moment(start).utc().format("YYYY-MM-DD HH:mm:ss");
-  const endUTC = moment(end).utc().format("YYYY-MM-DD HH:mm:ss");
+  const start = moment(startLocal).utc().format("YYYY-MM-DD HH:mm:ss");
+  const end = moment(endLocal).utc().format("YYYY-MM-DD HH:mm:ss");
+
 
     try {
       const response = await axios.post(`${API_URL}/metrics`, {
-        startUTC,
-        endUTC,
+        start,
+        end,
         metrics
       });
       return response.data;
