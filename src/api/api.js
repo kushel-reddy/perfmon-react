@@ -1,8 +1,8 @@
 import axios from 'axios';
 const moment = require("moment")
 
-// const API_URL = 'http://ec2-13-127-87-100.ap-south-1.compute.amazonaws.com:3000';
-const API_URL = 'http://localhost:3000';
+const API_URL = 'http://ec2-13-127-87-100.ap-south-1.compute.amazonaws.com:3000';
+// const API_URL = 'http://localhost:3000';
 
 
 export const fetchMetricsWithRange = async (start, end, selectedMetric) => {
