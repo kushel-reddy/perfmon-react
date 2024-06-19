@@ -11,8 +11,8 @@ export const fetchMetricsWithRange = async (start, end, selectedMetric) => {
     metric.value
   ));
 
-  const startUTC = moment(start).utc().format();
-  const endUTC = moment(end).utc().format();
+  const startUTC = moment(start).utc().format("YYYY-MM-DD HH:mm:ss");
+  const endUTC = moment(end).utc().format("YYYY-MM-DD HH:mm:ss");
 
     try {
       const response = await axios.post(`${API_URL}/metrics`, {
