@@ -65,8 +65,10 @@ const Dashboard = () => {
                 data: metrics.map((m) => {
                     var utcTime = moment.utc(m.interval, "YYYY-MM-DD HH:mm");
                     var localTime = utcTime.local().format("YYYY-MM-DD HH:mm");
+                    console.log("m.interval", m.interval);
+                    console.log(moment.unix(m.interval).format("YYYY-MM-DD HH:mm"));
                     return {
-                        timestamp: localTime,
+                        timestamp: isLive ? moment.unix(m.interval).format("YYYY-MM-DD HH:mm") : localTime,
                         value: m[metric.value],
                         command: m.Command
                     }
