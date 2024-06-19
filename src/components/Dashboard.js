@@ -66,7 +66,7 @@ const Dashboard = () => {
                     var utcTime = moment.utc(m.interval, "YYYY-MM-DD HH:mm");
                     var localTime = utcTime.local().format("YYYY-MM-DD HH:mm");
                     return {
-                        timestamp: isLive ? moment.unix(m.interval).format("YYYY-MM-DD HH:mm") : localTime,
+                        timestamp: localTime,
                         value: m[metric.value],
                         command: m.Command
                     }
